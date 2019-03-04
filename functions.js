@@ -128,6 +128,15 @@ function mostProlificAuthor(authors) {
  ****************************************************************/
 function relatedBooks(bookId, authors, books) {
   // Your code goes here
+  const book = getBookById(bookId, books);
+  const titles = [];
+  book.authors.forEach(author => {
+    const bookTitles = titlesByAuthorName(author.name, authors, books).filter(
+      book => !titles.includes(book)
+    );
+    titles.push(...bookTitles);
+  });
+  return titles;
 }
 
 /**************************************************************
@@ -138,6 +147,25 @@ function relatedBooks(bookId, authors, books) {
  ****************************************************************/
 function friendliestAuthor(authors) {
   // Your code goes here
+  authors.forEach(author => {
+    author.coAuthoringCount = 0;
+    authors.forEach(secondAuthor => {
+      if (author.name !== secondAuthor.name) {
+        const sharedBooks = secondAuthor.books.filter(book => {
+          return author.books.includes(book);
+        });
+        author.coAuthoringCount += sharedBooks.length;
+      }
+    });
+  });
+
+  let friendlyAuthor = authors[0];
+  authors.forEach(author => {
+    if (author.coAuthoringCount > friendlyAuthor.coAuthoringCount) {
+      friendlyAuthor = author;
+    }
+  });
+  return friendlyAuthor.name;
 }
 
 module.exports = {
